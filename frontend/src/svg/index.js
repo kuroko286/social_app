@@ -21,8 +21,12 @@ import Public from "./public";
 import NewRoom from "./newRoom";
 import Home from "./home";
 import FriendsActive from "./friendsActive";
+import Light from "./light";
+import Dark from "./dark";
 
 export {
+  Light,
+  Dark,
   Logo,
   HomeActive,
   Friends,
