@@ -3,5 +3,6 @@ import { Outlet, Navigate } from "react-router-dom";
 
 export const RequireAuth = () => {
   const user = useSelector((state) => state.user);
-  return user ? <Outlet></Outlet> : <Navigate to="/login"></Navigate>;
+  return <Outlet></Outlet>;
+  // return user ? <Outlet></Outlet> : <Navigate to="/login"></Navigate>;
 };

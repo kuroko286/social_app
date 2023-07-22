@@ -4,11 +4,8 @@ module.exports = {
   theme: {
     extend: {
       colors: {},
-      width: {
-        11: "44px",
-      },
-      height: {
-        11: "44px",
+      spacing: {
+        header: "80px",
       },
     },
   },

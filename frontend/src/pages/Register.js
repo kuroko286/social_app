@@ -1,22 +1,12 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { InputFiled } from "../components/Form/InputField";
-import RegisterValidate from "../validates/RegisterValidate";
+import { Input } from "../components/Form/Input";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
 import { login } from "../reducers/userReducer";
-
-const initialState = {
-  first_name: "",
-  last_name: "",
-  email: "",
-  password: "",
-  bYear: "",
-  bMonth: "",
-  bDay: "",
-  gender: "",
-};
+import { FormProvider, useForm } from "react-hook-form";
+import { RadioGroup } from "../components/Form/RadioInput";
 
 const registerInputs = [
   {
@@ -25,6 +15,12 @@ const registerInputs = [
     type: "text",
     placeholder: "Please enter your first name",
     label: "First name",
+    validation: {
+      required: {
+        value: true,
+        message: "First name is required",
+      },
+    },
   },
   {
     id: 2,
@@ -32,6 +28,12 @@ const registerInputs = [
     type: "text",
     placeholder: "Please enter your last name",
     label: "Last name",
+    validation: {
+      required: {
+        value: true,
+        message: "Last name is required",
+      },
+    },
   },
   {
     id: 3,
@@ -39,6 +41,16 @@ const registerInputs = [
     type: "text",
     placeholder: "Please enter your email",
     label: "Email",
+    validation: {
+      required: {
+        value: true,
+        message: "Email is required",
+      },
+      pattern: {
+        value: /^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/,
+        message: "Invalid email address",
+      },
+    },
   },
   {
     id: 4,
@@ -46,57 +58,117 @@ const registerInputs = [
     type: "password",
     placeholder: "Please enter your password",
     label: "Password",
+    validation: {
+      required: {
+        value: true,
+        message: "Password is required",
+      },
+      minLength: {
+        value: 6,
+        message: "Password must be at least 6 characters",
+      },
+      maxLength: {
+        value: 28,
+        message: "Password must be less than 28 characters",
+      },
+    },
   },
   {
     id: 5,
     name: "bYear",
-    max: new Date().getFullYear(),
-    min: 1900,
     type: "number",
     placeholder: "Please enter your birth year",
     label: "Birth year",
+    validation: {
+      required: {
+        value: true,
+        message: "Year is required",
+      },
+      min: {
+        value: 1900,
+        message: "Year must be greater or equal than 1900",
+      },
+      max: {
+        value: new Date().getFullYear(),
+        message: `Year must be less or equal than ${new Date().getFullYear()}`,
+      },
+    },
   },
   {
     id: 6,
     name: "bMonth",
-    min: 1,
-    max: 12,
     type: "number",
     placeholder: "Please enter your birth month",
     label: "Birth month",
+    validation: {
+      required: {
+        value: true,
+        message: "Month is required",
+      },
+      min: {
+        value: 1,
+        message: "Month must be greater or equal than 1",
+      },
+      max: {
+        value: 12,
+        message: "Month must be less or equal than 12",
+      },
+    },
   },
   {
     id: 7,
     name: "bDay",
-    min: 1,
-    max: 31,
     type: "number",
     placeholder: "Please enter your birth day",
     label: "Birth day",
+    validation: {
+      required: {
+        value: true,
+        message: "Day is required",
+      },
+      min: {
+        value: 1,
+        message: "Day must be greater or equal than 1",
+      },
+      max: {
+        value: 31,
+        message: "Day must be less or equal than 31",
+      },
+    },
   },
 ];
+const radiosInput = {
+  name: "gender",
+  groupLabel: "Gender",
+  items: [
+    { value: "male", label: "Male" },
+    { value: "female", label: "Female" },
+    { value: "other", label: "Other" },
+  ],
+};
 export const Register = () => {
-  const [userInfo, setUserInfo] = useState(initialState);
-  const [registerError, setRegisterError] = useState(initialState);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const methods = useForm({
+    defaultValues: {
+      gender: "male",
+    },
+  });
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    // Add your registration logic here
-    const errors = RegisterValidate(userInfo);
-    if (errors) {
-      setRegisterError(errors);
-      return;
-    }
+  const onSubmit = methods.handleSubmit((data) => {
+    console.log(data);
+    handleRegister(data);
+  });
+
+  const handleRegister = async (registerData) => {
     try {
       setLoading(true);
       const { data } = await axios.post(
         "http://localhost:8000/register",
-        userInfo
+        registerData
       );
       const { message, ...rest } = data;
 
@@ -114,83 +186,32 @@ export const Register = () => {
       setError(error.response.data.message);
     }
   };
-  const handleChange = (e) => {
-    setRegisterError(initialState);
-    const { name, value } = e.target;
-    setUserInfo({ ...userInfo, [name]: value });
-  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 py-2 sm:px-0 md:px-32 lg:px-64">
       <h2 className="text-2xl font-bold mb-5">Register Page</h2>
-      <form
-        className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full sm:w-3/4 md:w-1/2 lg:w-1/3"
-        onSubmit={handleRegister}
-      >
-        {registerInputs.map((item) => {
-          return (
-            <InputFiled
-              key={item.id}
-              {...item}
-              onChange={handleChange}
-              errorMessage={registerError[item.name]}
-            ></InputFiled>
-          );
-        })}
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="gender"
-          >
-            Gender:
-          </label>
-          <div className="mt-2" onChange={handleChange}>
-            <label className="inline-flex items-center">
-              <input
-                className="form-radio"
-                type="radio"
-                value="Male"
-                name="gender"
-                checked={userInfo.gender === "Male"}
-              />
-              <span className="ml-2">Male</span>
-            </label>
-            <label className="inline-flex items-center ml-6">
-              <input
-                className="form-radio"
-                type="radio"
-                value="Female"
-                name="gender"
-                checked={userInfo.gender === "Female"}
-              />
-              <span className="ml-2">Female</span>
-            </label>
-            <label className="inline-flex items-center ml-6">
-              <input
-                className="form-radio"
-                type="radio"
-                value="Other"
-                name="gender"
-                checked={userInfo.gender === "Other"}
-              />
-              <span className="ml-2">Other</span>
-            </label>
+      <FormProvider {...methods}>
+        <form
+          className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full sm:w-3/4 md:w-1/2 lg:w-1/3"
+          onSubmit={handleRegister}
+        >
+          {registerInputs.map((item) => {
+            return <Input {...item} key={item.id}></Input>;
+          })}
+          <RadioGroup {...radiosInput}></RadioGroup>
+          <div className="flex items-center justify-between">
+            <input
+              className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 cursor-pointer`}
+              type="submit"
+              value="Register"
+              disabled={loading}
+              onClick={onSubmit}
+            />
           </div>
-          {registerError.gender && (
-            <span className={`text-red-500`}>{registerError.gender}</span>
-          )}
-        </div>
-        <div className="flex items-center justify-between">
-          <input
-            className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50 cursor-pointer`}
-            type="submit"
-            value="Register"
-            disabled={loading}
-          />
-        </div>
-        {error && <span className="text-red-500">{error}</span>}
-        {success && <span className="text-green-500">{success}</span>}
-      </form>
+          {error && <span className="text-red-500">{error}</span>}
+          {success && <span className="text-green-500">{success}</span>}
+        </form>
+      </FormProvider>
       <p className="mt-4 text-center">
         Already have an account?{" "}
         <Link to="/login" className="text-blue-500 hover:text-blue-700">

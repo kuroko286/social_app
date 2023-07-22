@@ -32,7 +32,7 @@ function Header() {
     setSearching(false);
   });
   return (
-    <header className="fixed flex justify-between items-center px-8 py-4 shadow-xl w-full">
+    <header className="fixed z-20 h-header flex justify-between items-center px-8 py-4 shadow-xl w-full bg-white">
       <div className="relative flex items-center gap-2">
         <Logo></Logo>
         <div className="flex items-center bg-gray-200 px-3 py-2 gap-2 rounded-3xl">
