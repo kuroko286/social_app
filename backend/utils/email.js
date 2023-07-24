@@ -38,5 +38,37 @@ const sendVerificationEmail = (email, name, url) => {
     return res;
   });
 };
+const sendCodeEmail = (email, name, code) => {
+  auth.setCredentials({
+    refresh_token: MAILING_REFRESH,
+  });
+  const accessToken = auth.getAccessToken();
 
-module.exports = { sendVerificationEmail };
+  const transport = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      type: "OAuth2",
+      user: "developer2860@gmail.com",
+      clientId: MAILING_ID,
+      clientSecret: MAILING_SECRET,
+      refreshToken: MAILING_REFRESH,
+      accessToken,
+    },
+  });
+
+  const mailOptions = {
+    from: EMAIL,
+    to: email,
+    subject: "Verification email",
+    html: `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Document</title></head><body><p>Dear ${name}, please click this link below to verify your email.</p><button>${code}</button></body></html>`,
+  };
+  transport.sendMail(mailOptions, (err, res) => {
+    if (err) {
+      console.error(err);
+      return err;
+    }
+    return res;
+  });
+};
+
+module.exports = { sendVerificationEmail, sendCodeEmail };

@@ -1,3 +1,4 @@
+import { useSelector } from "react-redux";
 import Header from "../components/Header/Header";
 import { CreatePost } from "../components/Home/CreatePost";
 import { HomeLeft } from "../components/Home/Left";
@@ -7,6 +8,7 @@ import { StoryBar } from "../components/Home/StoryBar";
 import { VerifyAccount } from "../components/Home/VerifyAccount";
 
 export const Home = () => {
+  const user = useSelector((state) => state.user);
   return (
     <div>
       <Header></Header>
@@ -14,7 +16,7 @@ export const Home = () => {
         <HomeLeft></HomeLeft>
         <div className="pt-header z-0 w-full max-w-[680px] min-h-screen">
           <StoryBar></StoryBar>
-          <VerifyAccount></VerifyAccount>
+          {!user.verified && <VerifyAccount></VerifyAccount>}
           <CreatePost></CreatePost>
           <div>
             <Post></Post>

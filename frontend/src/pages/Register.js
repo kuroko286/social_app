@@ -56,7 +56,8 @@ export const Register = () => {
       <FormProvider {...methods}>
         <form
           className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 w-full sm:w-3/4 md:w-1/2 lg:w-1/3"
-          onSubmit={handleRegister}
+          onSubmit={(e) => e.preventDefault()}
+          noValidate
         >
           {registerInputs.map((item) => {
             return <Input {...item} key={item.id}></Input>;

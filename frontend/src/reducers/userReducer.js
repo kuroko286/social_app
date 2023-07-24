@@ -10,9 +10,15 @@ const userSlice = createSlice({
     login: (state, action) => {
       return action.payload;
     },
+    verify: (state, action) => {
+      return { ...state, verified: true };
+    },
+    logout: () => {
+      return null;
+    },
   },
 });
 
-export const { login } = userSlice.actions;
+export const { login, verify, logout } = userSlice.actions;
 
 export default userSlice.reducer;
