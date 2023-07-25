@@ -4,7 +4,7 @@ import { Gaming, ArrowRight, Light, Dark } from "../../svg";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { logout } from "../reducers/userReducer";
+import { logout } from "../../reducers/userReducer";
 import { useNavigate } from "react-router-dom";
 
 const defaultAvatar =

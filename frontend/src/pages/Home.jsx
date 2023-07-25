@@ -16,7 +16,8 @@ export const Home = () => {
         <HomeLeft></HomeLeft>
         <div className="pt-header z-0 w-full max-w-[680px] min-h-screen">
           <StoryBar></StoryBar>
-          {!user.verified && <VerifyAccount></VerifyAccount>}
+          <VerifyAccount></VerifyAccount>
+          {!user?.verified && <VerifyAccount></VerifyAccount>}
           <CreatePost></CreatePost>
           <div>
             <Post></Post>

@@ -10,7 +10,7 @@ const userSlice = createSlice({
     login: (state, action) => {
       return action.payload;
     },
-    verify: (state, action) => {
+    verify: (state) => {
       return { ...state, verified: true };
     },
     logout: () => {

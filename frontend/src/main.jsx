@@ -1,12 +1,11 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
 import "./index.css";
-import "./styles/icons/icons.css";
-import App from "./App";
 import { BrowserRouter } from "react-router-dom";
-import { configureStore } from "@reduxjs/toolkit";
 import { Provider } from "react-redux";
-import userReducer from "./reducers/userReducer";
+import { configureStore } from "@reduxjs/toolkit";
+import userReducer from "./reducers/userReducer.js";
 
 export const store = configureStore({
   reducer: {
@@ -14,13 +13,12 @@ export const store = configureStore({
   },
 });
 
-ReactDOM.render(
+ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </Provider>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );
