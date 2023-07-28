@@ -1,10 +1,10 @@
 import { useSelector } from "react-redux";
-import { Avatar } from "../Element/Avatar";
-import { Gaming, ArrowRight, Light, Dark } from "../../svg";
+import { Avatar } from "@/components/Element/Avatar";
+import { Gaming, ArrowRight, Light, Dark } from "@/assets/svg";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { logout } from "../../reducers/userReducer";
+import { logout } from "@/reducers/userReducer";
 import { useNavigate } from "react-router-dom";
 
 const defaultAvatar =

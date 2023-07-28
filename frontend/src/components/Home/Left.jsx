@@ -1,5 +1,5 @@
-import { Avatar } from "../Element/Avatar";
-import { FriendsActive } from "../../svg";
+import { Avatar } from "@/components/Element/Avatar";
+import { FriendsActive } from "@/assets/svg";
 
 const defaultAvatar =
   "https://res.cloudinary.com/dmhcnhtng/image/upload/v1643044376/avatars/default_pic_jeaybr.png";

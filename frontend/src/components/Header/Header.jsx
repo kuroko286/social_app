@@ -10,11 +10,11 @@ import {
   Notifications,
   Search,
   Watch,
-} from "../../svg";
-import { Badge } from "../Element/Badge";
+} from "@/assets/svg";
+import { Badge } from "@/components/Element/Badge";
 import { useRef, useState } from "react";
-import { useClickOutside } from "../../hooks/useClickOutside";
-import { Avatar } from "../Element/Avatar";
+import { useClickOutside } from "@/hooks/useClickOutside";
+import { Avatar } from "@/components/Element/Avatar";
 import { AllMenu } from "./AllMenu";
 import { UserMenu } from "./UserMenu";
 

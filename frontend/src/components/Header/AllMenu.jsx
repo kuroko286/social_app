@@ -1,4 +1,4 @@
-import { Search } from "../../svg";
+import { Search } from "@/assets/svg";
 const menus = [
   {
     type: "Social",

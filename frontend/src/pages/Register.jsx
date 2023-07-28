@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Input } from "../components/Form/Input";
+import { Input } from "@/components/Form/Input";
+import { RadioGroup } from "@/components/Form/RadioInput";
+import { login } from "@/reducers/userReducer";
+import { radiosInput, registerInputs } from "@/validates/Register";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { login } from "../reducers/userReducer";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { RadioGroup } from "../components/Form/RadioInput";
-import { registerInputs, radiosInput } from "../validates/Register";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Register = () => {
   const [error, setError] = useState("");

@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Input } from "../components/Form/Input";
-import Cookies from "js-cookie";
-import { useDispatch } from "react-redux";
-import { login } from "../reducers/userReducer";
+import { Input } from "@/components/Form/Input";
+import { login } from "@/reducers/userReducer";
+import { loginInputs } from "@/validates/Login";
 import axios from "axios";
+import Cookies from "js-cookie";
+import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import { loginInputs } from "../validates/Login";
+import { useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 
 export const Login = () => {
   const [error, setError] = useState("");

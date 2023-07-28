@@ -4,11 +4,17 @@ const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 dotenv.config();
 const { readdirSync } = require("fs");
+const fileUpload = require("express-fileupload");
 const app = express();
 
 // parse body payload.
 app.use(express.json()); // accept json payload in request.
 app.use(express.urlencoded({ extended: true })); // accept string or array payload in request
+app.use(
+  fileUpload({
+    useTempFiles: true,
+  })
+);
 
 // environment variables
 const PORT = process.env.PORT || 8080;

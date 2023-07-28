@@ -1,7 +1,15 @@
 import { useFormContext } from "react-hook-form";
-import { findInputError, isInputValid } from "../../utils/login";
+import { findInputError, isInputValid } from "@/utils/login";
 
-export const Input = ({ label, name, type, id, placeholder, validation }) => {
+export const Input = ({
+  label,
+  name,
+  type,
+  id,
+  placeholder,
+  validation,
+  ...props
+}) => {
   const {
     register,
     formState: { errors },

@@ -1,11 +1,9 @@
-import { useState } from "react";
-import { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { verify } from "@/reducers/userReducer";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { verify } from "../reducers/userReducer";
 import Cookies from "js-cookie";
+import { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 
 export const Activate = () => {
   const [error, setError] = useState("");

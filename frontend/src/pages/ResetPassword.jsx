@@ -1,10 +1,10 @@
-import { useState } from "react";
-import { Input } from "../components/Form/Input";
-import { FormProvider, useForm } from "react-hook-form";
+import { Avatar } from "@/components/Element/Avatar";
+import { Input } from "@/components/Form/Input";
+import { logout } from "@/reducers/userReducer";
 import axios from "axios";
-import { Avatar } from "../components/Element/Avatar";
 import Cookies from "js-cookie";
-import { logout } from "../reducers/userReducer";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 

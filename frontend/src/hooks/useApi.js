@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 export const useApi = (fetchApi) => {
   const [error, setError] = useState("");

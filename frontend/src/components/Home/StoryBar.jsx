@@ -1,5 +1,5 @@
-import { Plus, ArrowRight } from "../../svg";
-import { Avatar } from "../Element/Avatar";
+import { ArrowRight, Plus } from "@/assets/svg";
+import { Avatar } from "@/components/Element/Avatar";
 
 export const StoryBar = () => {
   return (
