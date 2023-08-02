@@ -1,41 +1,49 @@
-import axios from "axios";
-import { useState } from "react";
+import { usePost } from "@/hooks/usePost";
 import { useSelector } from "react-redux";
+import { Loading } from "../Element/Loading";
 
 export const VerifyAccount = () => {
   const user = useSelector((state) => state.user);
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const sendVerifyEmail = async () => {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${user.token}`,
+    },
+  };
+  const { responseData, error, loading, sendPost } = usePost(
+    "/sendVerification",
+    config
+  );
+
+  const handleClick = async () => {
     try {
-      const { data } = await axios.post(
-        `http://localhost:8000/sendVerification`,
-        {},
-        {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
-        }
-      );
-      setSuccess(data.message);
+      await sendPost({});
     } catch (error) {
-      setError(error.response.data.message);
+      console.log(error);
     }
   };
   return (
     <div className="p-3 rounded-md">
       <p>
-        <span className="font-bold text-lg">Impotant: </span>Your account didn't
+        <span className="font-bold text-lg">Impotant: </span>Your account didnt
         verify. If not, we will <strong className="text-red-500">delete</strong>{" "}
         it after 30 days from registration.
       </p>
-      <p
-        className="font-medium text-blue-500 hover:underline cursor-pointer"
-        onClick={sendVerifyEmail}
-      >
-        Click here to resend verification email
-      </p>
-      {success && <span className="text-green-500">{success}</span>}
+      {loading ? (
+        <span>
+          <Loading />
+        </span>
+      ) : (
+        <p
+          className="font-medium text-blue-500 hover:underline cursor-pointer"
+          onClick={handleClick}
+        >
+          Click here to resend verification email
+        </p>
+      )}
+
+      {responseData && (
+        <span className="text-green-500">{responseData.message}</span>
+      )}
       {error && <span className="text-red-500">{error}</span>}
     </div>
   );

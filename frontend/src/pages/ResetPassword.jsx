@@ -1,10 +1,14 @@
 import { Avatar } from "@/components/Element/Avatar";
+import { Button } from "@/components/Element/Button";
+import { ConfirmPasswordInput } from "@/components/Form/ConfirmPasswordInput";
+import { Form } from "@/components/Form/Form";
 import { Input } from "@/components/Form/Input";
+import { usePost } from "@/hooks/usePost";
 import { logout } from "@/reducers/userReducer";
 import axios from "axios";
 import Cookies from "js-cookie";
 import { useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
@@ -23,9 +27,8 @@ export const ResetPassword = () => {
 };
 
 const SearchEmail = ({ index, setIndex, setUser }) => {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const methods = useForm();
+  const { responseData, error, loading, sendPost } = usePost("/reset/email");
+
   const email = {
     label: "Email",
     type: "text",
@@ -42,37 +45,35 @@ const SearchEmail = ({ index, setIndex, setUser }) => {
       },
     },
   };
-  const onSubmit = async ({ email }) => {
+
+  const handleSendEmail = async (email) => {
     try {
-      setLoading(true);
-      const user = await axios.post("http://localhost:8000/reset/email", {
-        email,
-      });
-      setUser(user);
-      setLoading(false);
+      const data = await sendPost(email);
+      console.log(data);
+      setUser(data);
       setIndex(index + 1);
     } catch (error) {
-      setLoading(false);
-      setError(error.response.data.message);
+      console.log(error);
     }
   };
 
   return (
-    <div>
-      <p>Search Email</p>
-      <div>
-        <p>Enter your email to reset your password</p>
-        <FormProvider {...methods}>
-          <form noValidate onSubmit={(e) => e.preventDefault()}>
-            <Input {...email} />
-            <div>
-              <button type="submit" onClick={onSubmit} disabled={loading}>
-                Next
-              </button>
-            </div>
-          </form>
-        </FormProvider>
-        {error && <span className="text-red-500">{error}</span>}
+    <div className="w-full h-screen flex items-center justify-center">
+      <div className="bg-gray-100 rounded-lg p-4">
+        <p className="text-2xl font-bold text-center">Search Email</p>
+        <div>
+          <p>Enter your email to reset your password</p>
+          <Form
+            submitButton={"Next"}
+            loading={loading}
+            responseData={responseData}
+            error={error}
+            handleSubmit={handleSendEmail}
+          >
+            {<Input {...email} />}
+          </Form>
+          {error && <span className="text-red-500">{error}</span>}
+        </div>
       </div>
     </div>
   );
@@ -87,32 +88,40 @@ const SendEmail = ({ index, setIndex, user, setUser }) => {
     axios.post("http://localhost:8000/reset/sendemail", user);
   };
   return (
-    <div>
-      <p>Send Email</p>
-      <div>
-        <p>Is this your account?</p>
-        <div className="flex items-center gap-4">
-          <Avatar src={user.picture} alt="avatar" />
-          <p className="font-medium text-lg italic">{user.email}</p>
-        </div>
+    <div className="w-full h-screen flex items-center justify-center">
+      <div className="bg-gray-100 rounded-lg p-4">
+        <p className="text-2xl font-bold text-center">Send Email</p>
         <div>
-          <p>Choose your way to reset password</p>
-          <input type="radio" checked />
-          <label>Send email</label>
-        </div>
-        <div>
-          <button onClick={onDenied}>No</button>
-          <button onClick={onAccept}>Yes</button>
+          <p>Is this your account?</p>
+          <div className="flex items-center gap-4">
+            <Avatar src={user.picture} alt="avatar" />
+            <p className="font-medium text-lg italic">{user.email}</p>
+          </div>
+          <div>
+            <p className="font-medium">Choose your way to reset password</p>
+            <input type="radio" checked />
+            <label>Send email</label>
+          </div>
+          <div className="flex items-center gap-8 justify-center">
+            <Button
+              className="text-white bg-blue-500 hover:bg-blue-700"
+              onClick={onDenied}
+            >
+              No
+            </Button>
+            <Button
+              className={"text-white bg-blue-500 hover:bg-blue-700"}
+              onClick={onAccept}
+            >
+              Yes
+            </Button>
+          </div>
         </div>
       </div>
     </div>
   );
 };
 const CodeVerification = ({ index, setIndex, user }) => {
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-
-  const methods = useForm();
   const code = {
     label: "Code",
     type: "text",
@@ -133,39 +142,43 @@ const CodeVerification = ({ index, setIndex, user }) => {
       },
     },
   };
+  const { responseData, error, loading, sendPost } = usePost(
+    "/reset/codeVerification"
+  );
 
-  const handleSubmit = async ({ code }) => {
+  const handleSendCode = async ({ code }) => {
     try {
-      setLoading(true);
-      await axios.post("http://localhost:8000/reset/code", {
-        code,
-        email: user.email,
-      });
-      setLoading(false);
+      const data = await sendPost({ code, email: user.email });
       setIndex(index + 1);
     } catch (error) {
-      setLoading(false);
-      setError(error.response.data.message);
+      console.log(error);
     }
+  };
+  const handleDenied = () => {
+    setIndex(index - 1);
   };
 
   return (
-    <div>
-      <p>Code Verification</p>
-      <div>
-        <p>Check your email for the code and enter it to continue</p>
-        <FormProvider {...methods}>
-          <form noValidate onSubmit={(e) => e.preventDefault()}>
-            <Input {...code} />
-            <div>
-              <button onClick={() => setIndex(index - 1)}>Back</button>
-              <button type="submit" onClick={handleSubmit} disabled={loading}>
-                Verify
-              </button>
-            </div>
-          </form>
-        </FormProvider>
-        {error && <span className="text-red-500">{error}</span>}
+    <div className="w-full h-screen flex items-center justify-center">
+      <div className="bg-gray-100 rounded-lg p-4">
+        <p className="text-2xl font-bold text-center">Code Verification</p>
+        <div>
+          <p>Check your email for the code and enter it to continue</p>
+          <Form
+            handleSubmit={handleSendCode}
+            loading={loading}
+            responseData={responseData}
+            error={error}
+          >
+            {<Input {...code} />}
+          </Form>
+          <Button
+            className="text-white bg-blue-500 hover:bg-blue-700"
+            onClick={handleDenied}
+          >
+            Back
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -173,10 +186,7 @@ const CodeVerification = ({ index, setIndex, user }) => {
 const ChangePassword = ({ index, setIndex, user }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const methods = useForm();
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState("");
+  const { responseData, error, loading, sendPost } = usePost("/reset/password");
 
   const passwordValidate = [
     {
@@ -209,55 +219,45 @@ const ChangePassword = ({ index, setIndex, user }) => {
           value: true,
           message: `Confirm Password is required`,
         },
-        pattern: {
-          value: methods.getValues("password"),
-          message: "Password does not match",
-        },
       },
     },
   ];
-  const handleSubmit = async ({ password }) => {
+  const sideEffect = (data) => {
+    Cookies.set("user", null);
+    dispatch(logout());
+
+    setTimeout(() => {
+      navigate("/login");
+    }, 2000);
+  };
+
+  const handleChangePassword = async ({ password }) => {
     try {
-      setLoading(true);
-      await axios.post("http://localhost:8000/reset/password", {
-        password,
-        email: user.email,
-      });
-      setLoading(false);
-      Cookies.set("user", null);
-      dispatch(logout());
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
-
-      setError("");
+      const data = await sendPost({ password, email: user.email });
+      sideEffect(data);
     } catch (error) {
-      setLoading(false);
-      setSuccess("");
-      setError(error.response.data.message);
+      console.log(error);
     }
   };
 
   return (
-    <div>
-      <p>Change Password</p>
-      <div>
-        <p>Change your password</p>
-        <FormProvider {...methods}>
-          <form noValidate onSubmit={(e) => e.preventDefault()}>
-            <Input {...passwordValidate[0]} />
-            <Input {...passwordValidate[1]} />
-            <div>
-              <button type="submit" onClick={handleSubmit} disabled={loading}>
-                Submit
-              </button>
-            </div>
-          </form>
-        </FormProvider>
+    <div className="w-full h-screen flex items-center justify-center">
+      <div className="bg-gray-100 rounded-lg p-4">
+        <p className="text-2xl font-bold text-center">Change Password</p>
+        <div>
+          <p>Change your password</p>
+          <Form
+            handleSubmit={handleChangePassword}
+            loading={loading}
+            responseData={responseData}
+            error={error}
+            successMeessage="Password changed successfully"
+          >
+            {<Input {...passwordValidate[0]} />}
+            {<ConfirmPasswordInput {...passwordValidate[1]} />}
+          </Form>
+        </div>
       </div>
-      {error && <span className="text-red-500">{error}</span>}
-      {success && <span className="text-green-500">{success}</span>}
     </div>
   );
 };

@@ -8,17 +8,42 @@ const {
   sendEmail,
   codeVerification,
   changePassword,
+  changeAvatar,
+  getProfile,
+  updateDetails,
+  sendFriendRequest,
+  sendFollowRequest,
+  sendUnfollowRequest,
+  sendUnfriendRequest,
 } = require("../controllers/user");
 const { authUser } = require("../middlewares/authUser");
 const router = express.Router();
 
+// register, login
 router.post("/register", register);
-router.post("/activate", authUser, activateAccount);
 router.post("/login", login);
+
+// verify account
+router.post("/activate/:token", authUser, activateAccount);
 router.post("/sendVerification", authUser, sendVerifyEmail);
+
+// reset password
 router.post("/reset/email", checkEmail);
-router.post("reset/sendEmail", sendEmail);
+router.post("/reset/sendEmail", sendEmail);
 router.post("/reset/codeVerification", codeVerification);
 router.post("/reset/password", changePassword);
+
+// change avatar
+router.put("/users/avatar", authUser, changeAvatar);
+
+//profile
+router.get("/users/:userId", authUser, getProfile);
+router.put("/users", authUser, updateDetails);
+
+// friends, followers
+router.put("/users/:userId/friends", authUser, sendFriendRequest);
+router.put("/users/:userId/followers", authUser, sendFollowRequest);
+router.delete("/users/:userId/followers", authUser, sendUnfollowRequest);
+router.delete("/users/:userId/friends", authUser, sendUnfriendRequest);
 
 module.exports = router;

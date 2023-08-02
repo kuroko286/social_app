@@ -22,7 +22,10 @@ export const UserMenu = () => {
   };
   return (
     <div className="absolute w-[342px] p-3 rounded-lg top-full -right-3 mt-1 z-10 shadow-lg bg-white border-2">
-      <header className="flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer">
+      <header
+        className="flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer"
+        onClick={() => navigate("/profile")}
+      >
         <Avatar src={user?.picture || defaultAvatar}></Avatar>
         <p className="font-medium text-lg">Nguyen Van A</p>
       </header>

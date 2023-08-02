@@ -16,7 +16,7 @@ function App() {
           <Route element={<RequireAuth />}>
             <Route index element={<Home />} exact />
             <Route path="/profile" element={<Profile />} exact />
-            <Route path="/activate/:verifyToken" element={<Activate />} />
+            <Route path="/activate" element={<Activate />} exact />
           </Route>
           <Route element={<NotRequireAuth />}>
             <Route path="/login" element={<Login />} exact />

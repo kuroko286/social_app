@@ -61,7 +61,7 @@ export const CreatePost = () => {
     formData.append("userId", user?._id || "64b52bc0bf9711418b05603d");
     post.media.forEach((media) => formData.append("media", media));
 
-    axios.post("http://localhost:8000/upload", formData, {
+    axios.post("http://localhost:8000/post", formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

@@ -1,8 +1,9 @@
 import { useFormContext } from "react-hook-form";
 import { useFieldError } from "@/hooks/useFieldError";
 import { InputError } from "./InputError";
+import { checkConfirmPassword } from "@/validates/ResetPassword";
 
-export const Input = ({
+export const ConfirmPasswordInput = ({
   label,
   name,
   type,
@@ -14,6 +15,7 @@ export const Input = ({
   const {
     register,
     formState: { errors },
+    getValues,
   } = useFormContext();
   const { isValid, message } = useFieldError(errors, name);
   // prevent change value when scroll
@@ -34,7 +36,10 @@ export const Input = ({
         type={type}
         className="w-full p-5 font-medium border rounded-md border-slate-300 placeholder:opacity-60"
         placeholder={placeholder}
-        {...register(name, validation)}
+        {...register(name, {
+          ...validation,
+          validate: (value) => checkConfirmPassword(value, getValues),
+        })}
         onScroll={handleScroll}
       />
     </div>
