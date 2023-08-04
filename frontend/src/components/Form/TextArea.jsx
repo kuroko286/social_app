@@ -2,11 +2,11 @@ import { useFormContext } from "react-hook-form";
 import { useFieldError } from "@/hooks/useFieldError";
 import { InputError } from "./InputError";
 
-export const Input = ({
-  label,
-  name,
-  type,
+export const Textarea = ({
   id,
+  name,
+  label,
+  className,
   placeholder,
   validation,
   ...props
@@ -16,11 +16,6 @@ export const Input = ({
     formState: { errors },
   } = useFormContext();
   const { isValid, message } = useFieldError(errors, name);
-  // prevent change value when scroll
-  const handleScroll = (e) => {
-    e.preventDefault();
-  };
-
   return (
     <div className="flex flex-col w-full gap-2">
       <div className="flex justify-between">
@@ -29,15 +24,12 @@ export const Input = ({
         </label>
         {!isValid && <InputError message={message} />}
       </div>
-      <input
-        id={id}
-        type={type}
-        className="w-full p-5 font-medium border rounded-md border-slate-300 placeholder:opacity-60"
-        placeholder={placeholder}
+      <textarea
         {...register(name, validation)}
-        onScroll={handleScroll}
+        className={`outline-none border-none resize-none w-96 h-32 ${className}`}
+        placeholder={placeholder}
         {...props}
-      />
+      ></textarea>
     </div>
   );
 };

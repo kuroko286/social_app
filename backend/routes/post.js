@@ -12,7 +12,7 @@ const { checkFile } = require("../middlewares/checkFile");
 const { authUser } = require("../middlewares/authUser");
 
 // post
-router.post("/posts", checkFile, createPost);
+router.post("/posts", checkFile, authUser, createPost);
 router.get("/posts", getAllPosts);
 router.delete("/posts/:postId", authUser, deletePost);
 

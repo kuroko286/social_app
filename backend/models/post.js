@@ -18,6 +18,12 @@ const postSchema = mongoose.Schema(
       ref: "User",
       required: true,
     },
+    likes: {
+      type: Array,
+    },
+    shares: {
+      type: Array,
+    },
     comments: [
       {
         comment: {

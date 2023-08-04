@@ -12,11 +12,14 @@ export const FileInput = ({ name, id, validation, children, multiple }) => {
     <div>
       <input
         type="file"
+        className="hidden"
         multiple={multiple}
         {...register(name, validation)}
         id={id}
       />
-      <label htmlFor={id}>{children}</label>
+      <label htmlFor={id} className="cursor-pointer">
+        {children}
+      </label>
       {isValid && <InputError message={message} />}
     </div>
   );

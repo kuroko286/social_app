@@ -9,17 +9,21 @@ cloudinary.config({
 
 const createPost = async (req, res) => {
   try {
-    const { text, userId } = req.body;
-    const files = Object.values(req.files).flat();
+    const { text } = req.body;
+    const { id } = req.user;
     const media = [];
-    for (const file of files) {
-      const { url } = await cloudinary.v2.uploader.upload(file.tempFilePath);
-      media.push(url);
+    if (req.files) {
+      const files = Object.values(req.files).flat();
+      for (const file of files) {
+        const { url } = await cloudinary.v2.uploader.upload(file.tempFilePath);
+        media.push(url);
+      }
     }
+
     const newPost = new Post({
       text,
       media,
-      userId: userId,
+      userId: id,
     });
     await newPost.save();
     res.status(200).json(newPost);
