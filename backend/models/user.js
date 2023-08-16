@@ -25,6 +25,11 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, "Email is required"],
       trim: true,
+      unique: true,
+    },
+    phone: {
+      type: String,
+      trim: true,
     },
     password: {
       type: String,
@@ -88,7 +93,7 @@ const userSchema = mongoose.Schema(
     ],
     details: {
       bio: String,
-      otherName: String,
+      // otherName: String,
       job: String,
       workplace: String,
       highSchool: String,

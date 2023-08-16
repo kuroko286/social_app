@@ -6,13 +6,14 @@ import Market from "./market";
 import Gaming from "./gaming";
 import Menu from "./menu";
 import Messenger from "./messenger";
-import ArrowDown from "./arrowDown";
 import Notifications from "./notifications";
 import Search from "./search";
 import Return from "./return";
-import ArrowDown1 from "./arrowDow1";
 import Plus from "./plus";
-import ArrowRight from "./arrowRight";
+import LeftArrow from "./leftArrow";
+import RightArrow from "./rightArrow";
+import LeftChevron from "./leftChevron";
+import RightChevron from "./rightChevron";
 import LiveVideo from "./liveVideo";
 import Photo from "./photo";
 import Feeling from "./feeling";
@@ -22,6 +23,7 @@ import NewRoom from "./newRoom";
 import Home from "./home";
 import FriendsActive from "./friendsActive";
 import Light from "./light";
+import Edit from "./edit";
 import Dark from "./dark";
 
 export {
@@ -36,12 +38,13 @@ export {
   Menu,
   Messenger,
   Notifications,
-  ArrowDown,
+  LeftArrow,
+  LeftChevron,
   Search,
   Return,
-  ArrowDown1,
   Plus,
-  ArrowRight,
+  RightArrow,
+  RightChevron,
   LiveVideo,
   Photo,
   Feeling,
@@ -49,5 +52,6 @@ export {
   Public,
   NewRoom,
   Home,
+  Edit,
   FriendsActive,
 };

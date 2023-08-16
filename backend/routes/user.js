@@ -10,6 +10,8 @@ const {
   changePassword,
   changeAvatar,
   getProfile,
+  getOtherProfile,
+  getUserIntroduce,
   updateDetails,
   sendFriendRequest,
   sendFollowRequest,
@@ -37,7 +39,9 @@ router.post("/reset/password", changePassword);
 router.put("/users/avatar", authUser, changeAvatar);
 
 //profile
-router.get("/users/:userId", authUser, getProfile);
+router.get("/users/profile", authUser, getProfile);
+router.get("/users/introduce/:id", getUserIntroduce);
+router.get("/users/:viewedId", authUser, getOtherProfile);
 router.put("/users", authUser, updateDetails);
 
 // friends, followers

@@ -1,6 +1,6 @@
 import { useSelector } from "react-redux";
 import { Avatar } from "@/components/Element/Avatar";
-import { Gaming, ArrowRight, Light, Dark } from "@/assets/svg";
+import { Gaming, RightArrow, Light, Dark } from "@/assets/svg";
 import { useState } from "react";
 import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
@@ -36,14 +36,14 @@ export const UserMenu = () => {
               <Gaming></Gaming>
               <p className="font-medium">Settings & Private</p>
             </div>
-            <ArrowRight></ArrowRight>
+            <RightArrow />
           </li>
           <li className="flex justify-between items-center p-2 rounded-md hover:bg-gray-200 cursor-pointer">
             <div className="flex items-center  gap-3">
               <Gaming></Gaming>
               <p className="font-medium">Support</p>
             </div>
-            <ArrowRight></ArrowRight>
+            <RightArrow />
           </li>
           <li
             className="flex justify-between items-center p-2 rounded-md hover:bg-gray-200 cursor-pointer"

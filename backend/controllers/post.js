@@ -34,8 +34,8 @@ const createPost = async (req, res) => {
 
 const getAllPosts = async (req, res) => {
   try {
-    const { data } = await Post.find().populate("userId");
-    return res.status(200).json(data);
+    const posts = await Post.find({}).populate("user");
+    return res.status(200).json(posts);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -62,13 +62,19 @@ const getAllComments = async (req, res) => {
 
 const createComment = async (req, res) => {
   try {
-    const { text, postId } = req.body;
-    const newComment = new Post({
-      text,
-      postId: postId,
-    });
-    await newComment.save();
-    res.status(200).json(newComment);
+    const { userId } = req.user;
+    const { comment } = req.body;
+    const newComment = {
+      comment,
+      commentBy: userId,
+    };
+
+    const postId = req.params.postId;
+    await Post.findOneAndUpdate(
+      { _id: postId },
+      { $push: { comments: newComment } }
+    );
+    res.status(200).json({ message: "Comment successfully." });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

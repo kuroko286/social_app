@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const Code = require("../models/code");
+const Post = require("../models/post");
 
 const { sendVerificationEmail, sendCodeEmail } = require("../utils/email");
 const { generateToken } = require("../utils/token");
@@ -14,6 +15,7 @@ const {
 const bcrypt = require("bcrypt");
 const { generateCode } = require("../utils/code");
 const cloudinary = require("cloudinary");
+const { getPostsByUserId } = require("../services/post");
 
 const register = async (req, res) => {
   try {
@@ -234,14 +236,32 @@ const changeAvatar = async (req, res) => {
 const getProfile = async (req, res) => {
   try {
     const { id } = req.user;
-    const { userId } = req.params;
     const user = await User.findById(id).select("-password");
-    if (id === userId) {
-      return res.status(200).json(user);
-    }
-    const viewedUser = await User.findById(userId).select("-password");
+    const posts = await getPostsByUserId(id);
+    return res.status(200).json({ user, posts });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+const getUserIntroduce = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id).select("-password");
+    return res.status(200).json({ user });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+const getOtherProfile = async (req, res) => {
+  try {
+    const { id } = req.user;
+    const { viewedId } = req.params;
+    const user = await User.findById(id).select("-password");
+    const posts = await getPostsByUserId(viewedId);
+    const viewedUser = await User.findById(viewedId).select("-password");
     const relationship = getRelationship(user, viewedUser);
-    return res.status(200).json({ user: viewedUser, relationship });
+    return res.status(200).json({ user: viewedUser, posts, relationship });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -249,13 +269,53 @@ const getProfile = async (req, res) => {
 const updateDetails = async (req, res) => {
   try {
     const { id } = req.user;
-    const user = await User.findById(id).select("-password");
+    // const user = await User.findById(id).select("-password");
     const data = req.body;
-    for (const field in data) {
-      user[field] = data[field];
-    }
-    await user.save();
-    return res.status(200).json({ message: "Update profile successfully." });
+    const {
+      first_name,
+      last_name,
+      phone,
+      bYear,
+      bMonth,
+      bDay,
+      gender,
+      bio,
+      job,
+      workplace,
+      highSchool,
+      college,
+      currentCity,
+      hometown,
+      instagram,
+      relationship,
+      // ...rest
+    } = data;
+    const user = await User.findOneAndUpdate(
+      { _id: id },
+      {
+        first_name,
+        last_name,
+        gender,
+        bDay,
+        bMonth,
+        bYear,
+        phone,
+        details: {
+          bio,
+          job,
+          workplace,
+          highSchool,
+          college,
+          currentCity,
+          hometown,
+          instagram,
+          relationship,
+        },
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({ user });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -381,9 +441,11 @@ module.exports = {
   changePassword,
   changeAvatar,
   getProfile,
+  getOtherProfile,
   updateDetails,
   sendFriendRequest,
   sendFollowRequest,
   sendUnfriendRequest,
   sendUnfollowRequest,
+  getUserIntroduce,
 };

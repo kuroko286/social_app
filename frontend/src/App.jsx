@@ -1,9 +1,10 @@
-import { Activate } from "@/pages/Activate";
-import { Home } from "@/pages/Home";
-import { Login } from "@/pages/Login";
-import { Profile } from "@/pages/Profile";
-import { Register } from "@/pages/Register";
-import { ResetPassword } from "@/pages/ResetPassword";
+import { Activate } from "@/features/auth/pages/Activate";
+import { Home } from "@/features/misc/home/pages/Home";
+import { Login } from "@/features/auth/pages/Login";
+import { OwnerProfile } from "@/features/user/pages/OwnerProfile";
+import { OtherProfile } from "@/features/user/pages/OtherProfile";
+import { Register } from "@/features/auth/pages/Register";
+import { ResetPassword } from "@/features/user/pages/ResetPassword";
 import { NotRequireAuth } from "@/routes/NotRequireAuth";
 import { RequireAuth } from "@/routes/RequireAuth";
 import { Route, Routes } from "react-router-dom";
@@ -15,7 +16,8 @@ function App() {
         <Route element={<HomeLayout />}>
           <Route element={<RequireAuth />}>
             <Route index element={<Home />} exact />
-            <Route path="/profile" element={<Profile />} exact />
+            <Route path="/profile" element={<OwnerProfile />} exact />
+            <Route path="/users/:userId" element={<OtherProfile />} exact />
             <Route path="/activate" element={<Activate />} exact />
           </Route>
           <Route element={<NotRequireAuth />}>

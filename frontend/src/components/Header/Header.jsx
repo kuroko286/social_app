@@ -126,7 +126,7 @@ function Header() {
             className="bg-gray-200 rounded-full cursor-pointer"
             onClick={() => setShowUserMenu(!showUserMenu)}
           >
-            <Avatar src={user?.picture || defaultAvatar}></Avatar>
+            <Avatar src={user.picture}></Avatar>
           </li>
           {showAllMenus && <AllMenu></AllMenu>}
           {showUserMenu && <UserMenu></UserMenu>}

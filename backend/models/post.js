@@ -13,7 +13,7 @@ const postSchema = mongoose.Schema(
     media: {
       type: Array,
     },
-    userId: {
+    user: {
       type: mongoose.Schema.ObjectId,
       ref: "User",
       required: true,
