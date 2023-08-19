@@ -18,16 +18,8 @@ const {
   sendUnfollowRequest,
   sendUnfriendRequest,
 } = require("../controllers/user");
-const { authUser } = require("../middlewares/authUser");
+const { authUser } = require("../../auth/middlewares/authUser");
 const router = express.Router();
-
-// register, login
-router.post("/register", register);
-router.post("/login", login);
-
-// verify account
-router.post("/activate/:token", authUser, activateAccount);
-router.post("/sendVerification", authUser, sendVerifyEmail);
 
 // reset password
 router.post("/reset/email", checkEmail);
@@ -43,11 +35,5 @@ router.get("/users/profile", authUser, getProfile);
 router.get("/users/introduce/:id", getUserIntroduce);
 router.get("/users/:viewedId", authUser, getOtherProfile);
 router.put("/users", authUser, updateDetails);
-
-// friends, followers
-router.put("/users/:userId/friends", authUser, sendFriendRequest);
-router.put("/users/:userId/followers", authUser, sendFollowRequest);
-router.delete("/users/:userId/followers", authUser, sendUnfollowRequest);
-router.delete("/users/:userId/friends", authUser, sendUnfriendRequest);
 
 module.exports = router;

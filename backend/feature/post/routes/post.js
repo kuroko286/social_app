@@ -8,8 +8,8 @@ const {
   deletePost,
   likePost,
 } = require("../controllers/post");
-const { checkFile } = require("../middlewares/checkFile");
-const { authUser } = require("../middlewares/authUser");
+const { checkFile } = require("../../../middlewares/checkFile");
+const { authUser } = require("../../auth/middlewares/authUser");
 
 // post
 router.post("/posts", checkFile, authUser, createPost);
