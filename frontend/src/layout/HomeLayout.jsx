@@ -5,6 +5,7 @@ import { Outlet } from "react-router-dom";
 import { createContext } from "react";
 import { PostMenu } from "@/features/post/components/PostMenu";
 import { EditProfile } from "@/features/user/components/EditProfile";
+import { UpdateAvatarForm } from "@/features/user/components/Header";
 
 export const ModelContext = createContext();
 
@@ -28,6 +29,7 @@ function HomeLayout() {
           {model === "create-post" && <CreatePost />}
           {model === "post-menu" && <PostMenu />}
           {model === "edit-profile" && <EditProfile />}
+          {model === "update-avatar" && <UpdateAvatarForm />}
         </div>
       </ModelContext.Provider>
     </div>

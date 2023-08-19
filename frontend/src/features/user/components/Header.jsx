@@ -2,6 +2,14 @@ import { Avatar } from "@/components/Element/Avatar";
 import { Button } from "@/components/Element/Button";
 import { useState } from "react";
 import axios from "axios";
+import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { useModel } from "@/hooks/useModel";
+import { useChangeAvatar } from "../api/changeAvatar";
+import { Form } from "@/components/Form/Form";
+import Cookies from "js-cookie";
+import { useDispatch, useSelector } from "react-redux";
+
+import { login } from "@/reducers/userReducer";
 
 export const Header = ({
   user,
@@ -61,28 +69,7 @@ export const Navbar = ({ index, setIndex }) => {
 };
 
 export const OwnerProfileHeader = ({ user, posts, index, setIndex }) => {
-  const [model, setModel] = useState(false);
-  const [avatar, setAvatar] = useState();
-
-  const handleAvatarChange = async (e) => {
-    setAvatar(e.target.files[0]);
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData();
-    formData.append("picture", avatar);
-    const { data } = await axios.put(
-      "http://localhost:8000/user/avatar",
-      formData,
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${user.token}`,
-        },
-      }
-    );
-  };
+  const [model, setModel] = useModel();
   return (
     <>
       <div className="flex justify-between gap-24 mt-10">
@@ -92,7 +79,7 @@ export const OwnerProfileHeader = ({ user, posts, index, setIndex }) => {
               "https://res.cloudinary.com/dmhcnhtng/image/upload/v1643044376/avatars/default_pic_jeaybr.png"
             }
             size={200}
-            onClick={() => setModel(true)}
+            onClick={() => setModel("update-avatar")}
           ></Avatar>
         </div>
         <div>
@@ -108,46 +95,77 @@ export const OwnerProfileHeader = ({ user, posts, index, setIndex }) => {
         </div>
       </div>
       <Navbar index={index} setIndex={setIndex} />
-      {model && (
-        <div className="fixed top-0 left-0 right-0 bottom-0 bg-gray-500/50 z-20">
-          <ul className="w-56 rounded-xl shadow-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-3 text-center">
-            <li className=" font-medium">
-              <input
-                type="file"
-                name="picture"
-                className="hidden"
-                id="avatarinput"
-                onChange={handleAvatarChange}
-              ></input>
-              <label htmlFor="avatarinput" className="cursor-pointer">
-                Upload image
-              </label>
-              {avatar && (
-                <>
-                  <img
-                    src={`${URL.createObjectURL(avatar)}`}
-                    className="rounded-xl w-32 h-32 object-contain bg-black"
-                    alt="avatar"
-                  />
-                  <button type="submit" onClick={handleSubmit}>
-                    Save
-                  </button>
-                </>
-              )}
-            </li>
-            <li className="cursor-pointer font-medium ">
-              Delete current avatar
-            </li>
-            <li
-              className="cursor-pointer font-medium text-red-500"
-              onClick={() => setModel(false)}
-            >
-              Cancel
-            </li>
-          </ul>
-        </div>
-      )}
     </>
+  );
+};
+
+export const UpdateAvatarForm = () => {
+  const methods = useFormContext();
+  const [model, setModel] = useModel();
+  const { responseData, error, loading, mutate } = useChangeAvatar();
+  const user = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (data) => {
+    try {
+      const { newPicture } = await mutate(data);
+      console.log(data);
+      console.log(newPicture);
+      Cookies.set("user", JSON.stringify({ ...user, picture: newPicture }));
+      dispatch(login({ ...user, picture: newPicture }));
+      setModel("none");
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  return (
+    <Form
+      responseData={responseData}
+      error={error}
+      loading={loading}
+      successMeessage="Change avatar success"
+      handleSubmit={handleSubmit}
+    >
+      <ul className="w-56 rounded-xl shadow-lg absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white p-3 text-center">
+        <li className=" font-medium">
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            id="avatarinput"
+            {...methods.register("picture")}
+          ></input>
+          <label htmlFor="avatarinput" className="cursor-pointer">
+            Upload image
+          </label>
+          {methods.getValues("picture") && (
+            <>
+              <img
+                src={`${URL.createObjectURL(methods.getValues("picture"))}`}
+                className="rounded-xl w-32 h-32 object-contain bg-black"
+                alt="avatar"
+              />
+              <button type="submit" onClick={handleSubmit}>
+                Save
+              </button>
+            </>
+          )}
+        </li>
+        <li
+          className="cursor-pointer font-medium"
+          onClick={() => methods.setValue("picture", "")}
+        >
+          Delete current avatar
+        </li>
+        <li
+          className="cursor-pointer font-medium text-red-500"
+          onClick={() => setModel("none")}
+        >
+          Cancel
+        </li>
+      </ul>
+    </Form>
   );
 };
 
