@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { Form } from "../../../components/Form/Form";
 import { useGet } from "@/hooks/useGet";
 import { Loading } from "../../../components/Element/Loading";
-import { usePut } from "@/hooks/usePut";
 import { Input } from "../../../components/Form/Input";
 import { RadioGroup } from "../../../components/Form/RadioInput";
 import { Cancel } from "../../../components/Icon/Icons";
@@ -10,6 +9,8 @@ import { useContext } from "react";
 import { ModelContext } from "@/layout/HomeLayout";
 import Cookies from "js-cookie";
 import { login } from "@/reducers/userReducer";
+import { useGetUserIntroduce } from "../api/getUserIntroduce";
+import { useChangeUserIntroduce } from "../api/changeUserIntroduce";
 
 export const EditProfile = () => {
   const [model, setModel] = useContext(ModelContext);
@@ -37,17 +38,13 @@ const EditProfileForm = () => {
     loading: getLoading,
     error: getError,
     data: _user,
-  } = useGet(`/users/introduce/${id}`);
+  } = useGetUserIntroduce(id);
   const {
     loading: putLoading,
     error: putError,
     responseData,
-    sendPost,
-  } = usePut(`/users`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
+    mutate,
+  } = useChangeUserIntroduce();
   const dispatch = useDispatch();
   if (getLoading || putLoading) {
     return <Loading size={32} />;
@@ -250,7 +247,7 @@ const EditProfileForm = () => {
   };
   const handleUpdateProfile = async (data) => {
     try {
-      const { user } = await sendPost(data);
+      const { user } = await mutate(data);
       console.log(user);
       Cookies.set("user", JSON.stringify(user));
       dispatch(login(user));

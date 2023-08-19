@@ -3,11 +3,10 @@ import { Avatar } from "@/components/Element/Avatar";
 import { Button } from "@/components/Element/Button";
 import ImageGallery from "@/components/Element/ImageGallery";
 import EmojiPicker from "emoji-picker-react";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext } from "react";
 import { useSelector } from "react-redux";
 import { getTimeAgo } from "@/utils/datetime";
-import { Controller, useForm } from "react-hook-form";
-import { usePost } from "@/hooks/useMutation";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { ModelContext } from "@/layout/HomeLayout";
 import { useCreateComment } from "../api/createComment";
 import { useEmojiTextInput } from "@/hooks/useEmojiTextInput";
@@ -89,12 +88,15 @@ export const PostInfo = ({ post }) => {
 };
 
 export const PostComment = ({ post, user }) => {
+  const methods = useForm();
   return (
     <div>
       <p className="font-medium text-gray-500 cursor-pointer py-1">
         View all comments
       </p>
-      <CommentForm post={post} user={user} />
+      <FormProvider {...methods}>
+        <CommentForm post={post} user={user} />
+      </FormProvider>
     </div>
   );
 };
