@@ -1,11 +1,11 @@
-export const Badge = ({ children }) => {
+export const Badge = ({ size, bgColor, children, position }) => {
   return (
-    <div className="absolute -top-4 -right-2">
-      <span
-        className={`block w-8 h-8 text-center leading-8 rounded-full bg-red-500 text-white font-semibold`}
+    <div className={`absolute ${position}`}>
+      <div
+        className={`w-${size} h-${size} flex justify-center items-center rounded-full text-white font-semibold ${bgColor}`}
       >
         {children}
-      </span>
+      </div>
     </div>
   );
 };

@@ -1,9 +1,9 @@
-import { CreatePost } from "@/features/misc/home/components/CreatePost";
-import { HomeLeft } from "@/features/misc/home/components/Left";
+import { CreatePost } from "@/features/mixed/home/components/CreatePost";
+import { HomeLeft } from "@/features/mixed/home/components/Left";
 import { Post } from "@/features/post/components/Post";
-import { HomeRight } from "@/features/misc/home/components/Right";
-import { StoryBar } from "@/features/misc/home/components/StoryBar";
-import { VerifyAccount } from "@/features/misc/home/components/VerifyAccount";
+import { HomeRight } from "@/features/mixed/home/components/Right";
+import { StoryBar } from "@/features/mixed/home/components/StoryBar";
+import { VerifyAccount } from "@/features/mixed/home/components/VerifyAccount";
 import { useSelector } from "react-redux";
 import { Loading } from "@/components/Element/Loading";
 import { useGetAllPosts } from "../../../post/api/getAllPosts";

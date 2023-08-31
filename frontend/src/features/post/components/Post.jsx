@@ -1,15 +1,17 @@
-import { Dots, Feeling } from "@/assets/svg";
+import { Dots, Feeling, HeartFill } from "@/assets/svg";
 import { Avatar } from "@/components/Element/Avatar";
 import { Button } from "@/components/Element/Button";
 import ImageGallery from "@/components/Element/ImageGallery";
 import EmojiPicker from "emoji-picker-react";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { useSelector } from "react-redux";
 import { getTimeAgo } from "@/utils/datetime";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { ModelContext } from "@/layout/HomeLayout";
 import { useCreateComment } from "../api/createComment";
 import { useEmojiTextInput } from "@/hooks/useEmojiTextInput";
+import { Comment, Heart, Share } from "@/components/Icon/Icons";
+import api from "@/lib/axios";
 
 export const Post = ({ post }) => {
   const user = useSelector((state) => state.user);
@@ -30,6 +32,7 @@ export const Post = ({ post }) => {
 export const PostHeader = ({ post }) => {
   const [model, setModel] = useContext(ModelContext);
   const { user, createdAt } = post;
+
   return (
     <div className="flex items-center justify-between p-3">
       <div className="flex items-center gap-3">
@@ -40,7 +43,7 @@ export const PostHeader = ({ post }) => {
         </div>
       </div>
       <span
-        className="p-2 rounded-full hover:bg-gray-400 cursor-pointer"
+        className="p-2 rounded-full hover:bg-gray-400 cursor-pointer relative"
         onClick={() => setModel("post-menu")}
       >
         <Dots color={"#000"} />
@@ -59,12 +62,50 @@ export const PostContent = ({ post }) => {
   );
 };
 
-export const PostInfo = ({ post }) => {
+export const PostInfo = ({ post, liked: _liked = false }) => {
+  const user = useSelector((state) => state.user);
   const { likes, shares, comments } = post;
+  const [like, setLike] = useState(likes.length);
+  const [liked, setLiked] = useState(_liked);
+
+  const handleLike = async () => {
+    try {
+      await api.put(
+        `/posts/${post._id}/like`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      setLike(like + 1);
+      setLiked(!liked);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleUnlike = async () => {
+    try {
+      await api.put(
+        `/posts/${post._id}/unlike`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      setLike(like - 1);
+      setLiked(!liked);
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <div>
       <div className="flex items-center justify-between">
-        <p>{likes.length} likes</p>
+        <p>{like} likes</p>
         <div className="flex items-center gap-3">
           <p>{comments.length} comments</p>
           <p>{shares.length} shares</p>
@@ -72,14 +113,27 @@ export const PostInfo = ({ post }) => {
       </div>
       <hr className="my-1 bg-black" />
       <div className="grid grid-cols-3 items-center">
+        {liked ? (
+          <div
+            className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300"
+            onClick={handleUnlike}
+          >
+            <HeartFill size={12} />
+          </div>
+        ) : (
+          <div
+            className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300"
+            onClick={handleLike}
+          >
+            <Heart size={12} />
+          </div>
+        )}
+
         <p className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300">
-          Like
+          <Comment size={12} />
         </p>
         <p className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300">
-          Comment
-        </p>
-        <p className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300">
-          Share
+          <Share size={12} />
         </p>
       </div>
       <hr className="my-1 bg-black" />
@@ -101,7 +155,7 @@ export const PostComment = ({ post, user }) => {
   );
 };
 
-const CommentForm = ({ post, user }) => {
+export const CommentForm = ({ post, user, comments, setComments }) => {
   const {
     methods: { control, handleSubmit },
     handleEmojiSelect,
@@ -112,7 +166,8 @@ const CommentForm = ({ post, user }) => {
   const { loading, error, responseData, mutate } = useCreateComment(post._id);
   const handleSendComment = async ({ comment }) => {
     try {
-      await mutate({ comment });
+      const newComment = await mutate({ comment });
+      setComments([...comments, newComment]);
     } catch (error) {
       console.log(error);
     }

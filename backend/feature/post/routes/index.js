@@ -7,6 +7,7 @@ const {
   createComment,
   deletePost,
   likePost,
+  unlikePost,
 } = require("../controllers/post");
 const { checkFile } = require("../../../middlewares/checkFile");
 const { authUser } = require("../../auth/middlewares/authUser");
@@ -22,5 +23,6 @@ router.post("/posts/:postId/comments", authUser, createComment);
 
 // reacts
 router.put("/posts/:postId/like", authUser, likePost);
+router.put("/posts/:postId/unlike", authUser, unlikePost);
 
 module.exports = router;

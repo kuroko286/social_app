@@ -67,30 +67,11 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    friends: {
-      type: Array,
-      default: [],
-    },
-    following: {
-      type: Array,
-      default: [],
-    },
-    followers: {
-      type: Array,
-      default: [],
-    },
-    requests: {
-      type: Array,
-      default: [],
-    },
-    search: [
-      {
-        user: {
-          type: mongoose.Schema.ObjectId,
-          ref: "User",
-        },
-      },
-    ],
+    friends: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+    following: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+    followers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+    requests: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
+    search: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
     details: {
       bio: String,
       // otherName: String,

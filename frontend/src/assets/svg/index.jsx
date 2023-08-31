@@ -25,8 +25,12 @@ import FriendsActive from "./friendsActive";
 import Light from "./light";
 import Edit from "./edit";
 import Dark from "./dark";
+import Saved from "./saved";
+import Group from "./group";
+import HeartFill from "./heartFill";
 
 export {
+  Group,
   Light,
   Dark,
   Logo,
@@ -54,4 +58,6 @@ export {
   Home,
   Edit,
   FriendsActive,
+  Saved,
+  HeartFill,
 };

@@ -1,9 +1,5 @@
 const express = require("express");
 const {
-  register,
-  activateAccount,
-  login,
-  sendVerifyEmail,
   checkEmail,
   sendEmail,
   codeVerification,
@@ -13,10 +9,6 @@ const {
   getOtherProfile,
   getUserIntroduce,
   updateDetails,
-  sendFriendRequest,
-  sendFollowRequest,
-  sendUnfollowRequest,
-  sendUnfriendRequest,
 } = require("../controllers/user");
 const { authUser } = require("../../auth/middlewares/authUser");
 const router = express.Router();

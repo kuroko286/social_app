@@ -1,4 +1,5 @@
 import { ModelContext } from "@/layout/HomeLayout";
+import api from "@/lib/axios";
 import { useContext } from "react";
 import { useSelector } from "react-redux";
 
@@ -24,7 +25,7 @@ const OtherPostMenu = () => {
           className="text-red-500 font-medium text-center p-2 cursor-pointer hover:bg-gray-200"
           onClick={() => setModel("none")}
         >
-          Camcel
+          Cancel
         </li>
       </ul>
     </div>
@@ -33,7 +34,15 @@ const OtherPostMenu = () => {
 
 const OwnerPostMenu = ({ post }) => {
   const [model, setModel] = useContext(ModelContext);
-  const handleDeletePost = async () => {};
+  const user = useSelector((state) => state.user);
+  const handleDeletePost = async () => {
+    await api.delete(`/posts/${post._id}`, {
+      headers: {
+        Authorization: `Bearer ${user.token}`,
+      },
+    });
+    setModel("none");
+  };
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl max-w-[560px] w-full">
       <ul>

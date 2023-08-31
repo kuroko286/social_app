@@ -4,7 +4,7 @@ const {
   activateAccount,
   login,
   sendVerifyEmail,
-} = require("../controllers/user");
+} = require("../controllers");
 const { authUser } = require("../middlewares/authUser");
 const router = express.Router();
 

@@ -169,10 +169,6 @@ const updateDetails = async (req, res) => {
 };
 
 module.exports = {
-  register,
-  activateAccount,
-  login,
-  sendVerifyEmail,
   checkEmail,
   sendEmail,
   codeVerification,
@@ -181,9 +177,5 @@ module.exports = {
   getProfile,
   getOtherProfile,
   updateDetails,
-  sendFriendRequest,
-  sendFollowRequest,
-  sendUnfriendRequest,
-  sendUnfollowRequest,
   getUserIntroduce,
 };

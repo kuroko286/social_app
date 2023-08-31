@@ -3,9 +3,14 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 dotenv.config();
-const { readdirSync } = require("fs");
 const fileUpload = require("express-fileupload");
+const socketServer = require("./socketServer");
+const http = require("http");
 const app = express();
+
+//socketio
+const server = http.createServer(app);
+socketServer.registerSocketServer(server);
 
 // parse body payload.
 app.use(express.json()); // accept json payload in request.
@@ -24,9 +29,11 @@ const DATABASE_URL = process.env.DATABASE_URL;
 app.use(cors());
 
 // routes
-readdirSync("./routes").forEach((route) =>
-  app.use("/", require("./routes/" + route))
-);
+const features = ["auth", "friends", "post", "user", "search"];
+features.forEach((feature) => {
+  const router = require(`./feature/${feature}/routes`);
+  app.use(`/`, router);
+});
 
 // database
 mongoose
@@ -38,6 +45,6 @@ app.get("/", (req, res) => {
   res.send("welcome from home");
 });
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
   console.log(`Server is listening at port ${PORT}`);
 });

@@ -1,8 +1,7 @@
 import { Avatar } from "@/components/Element/Avatar";
 import { Button } from "@/components/Element/Button";
 import { useState } from "react";
-import axios from "axios";
-import { FormProvider, useForm, useFormContext } from "react-hook-form";
+import { useFormContext } from "react-hook-form";
 import { useModel } from "@/hooks/useModel";
 import { useChangeAvatar } from "../api/changeAvatar";
 import { Form } from "@/components/Form/Form";
@@ -10,6 +9,13 @@ import Cookies from "js-cookie";
 import { useDispatch, useSelector } from "react-redux";
 
 import { login } from "@/reducers/userReducer";
+import {
+  acceptFriend,
+  cancelFriendRequest,
+  removeRequest,
+  sendFriendRequest,
+  unfriend,
+} from "@/features/friends/api/updateRelationship";
 
 export const Header = ({
   user,
@@ -190,14 +196,13 @@ export const OtherProfileHeader = ({
         <div>
           <div className="flex items-center gap-6">
             <h3>{user.first_name + " " + user.last_name}</h3>
-            <FriendStatusButton relationship={relationship} />
-            <FollowStatusButton relationship={relationship} />
+            <RelationshipStatus relationship={relationship} user={user} />
             <Button className="bg-gray-500 text-white">Chat</Button>
           </div>
           <div className="flex items-center gap-6">
             <p>{posts.length} posts</p>
-            <p>{user.followers} Followers</p>
-            <p>{user.following} Following</p>
+            <p>{user.followers.length} Followers</p>
+            <p>{user.following.length} Following</p>
           </div>
         </div>
       </div>
@@ -206,34 +211,188 @@ export const OtherProfileHeader = ({
   );
 };
 
-const FriendStatusButton = ({ relationship }) => {
+const RelationshipStatus = ({ relationship: _relationship, user }) => {
+  const [relationship, setRelationship] = useState(_relationship);
+  return (
+    <>
+      <FriendStatusButton
+        relationship={relationship}
+        setRelationship={setRelationship}
+        user={user}
+      />
+      <FollowStatusButton
+        relationship={relationship}
+        setRelationship={setRelationship}
+        user={user}
+      />
+    </>
+  );
+};
+
+const FriendStatusButton = ({ relationship, setRelationship, user }) => {
+  const { token } = useSelector((state) => state.user);
+  const [friendPopup, setFriendPopup] = useState(false);
+  const [acceptPopup, setAcceptPopup] = useState(false);
   const { friends, requests, beRequests } = relationship;
+
+  const handleUnfriend = async () => {
+    try {
+      await unfriend(user._id, token);
+      setRelationship({
+        friends: false,
+        requests: false,
+        beRequests: false,
+        following: false,
+      });
+      setFriendPopup(false);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleCancelRequest = async () => {
+    try {
+      await cancelFriendRequest(user._id, token);
+      setRelationship({
+        friends: false,
+        requests: false,
+        beRequests: false,
+        following: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleAddFriend = async () => {
+    try {
+      await sendFriendRequest(user._id, token);
+      setRelationship({
+        friends: false,
+        requests: true,
+        beRequests: false,
+        following: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleAccept = async () => {
+    try {
+      await acceptFriend(user._id, token);
+      setAcceptPopup(false);
+      setRelationship({
+        friends: true,
+        requests: false,
+        beRequests: false,
+        following: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const handleRemoveRequest = async () => {
+    try {
+      await removeRequest(user._id, token);
+      setAcceptPopup(false);
+      setRelationship({
+        ...relationship,
+        friends: false,
+        requests: false,
+        beRequests: false,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   if (friends)
     return (
-      <Button className="bg-gray-500 font-medium text-black">Friend</Button>
+      <div className="relative">
+        <Button
+          className="bg-gray-500 font-medium text-black"
+          onClick={() => setFriendPopup(!friendPopup)}
+        >
+          Friend
+        </Button>
+        {friendPopup && (
+          <div className="absolute bottom-0 right-0">
+            <ul>
+              <Button
+                className="bg-gray-500 font-medium text-black"
+                onClick={handleUnfriend}
+              >
+                Unfriend
+              </Button>
+            </ul>
+          </div>
+        )}
+      </div>
     );
   if (requests)
     return (
-      <Button className="bg-gray-500 font-medium text-black">
+      <Button
+        className="bg-gray-500 font-medium text-black"
+        onClick={handleCancelRequest}
+      >
         Sended Request
       </Button>
     );
   if (beRequests)
     return (
-      <Button className="bg-gray-500 font-medium text-black">
-        Accept Request
-      </Button>
+      <div className="relative">
+        <Button
+          className="bg-gray-500 font-medium text-black"
+          onClick={() => setAcceptPopup(!acceptPopup)}
+        >
+          Accept Request
+        </Button>
+        {acceptPopup && (
+          <div className="absolute bottom-0 right-0">
+            <ul>
+              <Button
+                className="bg-gray-500 font-medium text-black"
+                onClick={handleAccept}
+              >
+                Accept
+              </Button>
+              <Button
+                className="bg-gray-500 font-medium text-black"
+                onClick={handleRemoveRequest}
+              >
+                Deny
+              </Button>
+            </ul>
+          </div>
+        )}
+      </div>
     );
   return (
-    <Button className="bg-blue-500 font-medium text-white">Add Friend</Button>
+    <Button
+      className="bg-blue-500 font-medium text-white"
+      onClick={handleAddFriend}
+    >
+      Add Friend
+    </Button>
   );
 };
 
-const FollowStatusButton = ({ relationship }) => {
+const FollowStatusButton = ({ relationship, setRelationship, user }) => {
   const { following } = relationship;
   if (following)
     return (
-      <Button className="bg-gray-500 font-medium text-black">Following</Button>
+      <Button
+        className="bg-gray-500 font-medium text-black"
+        onClick={() => setRelationship({ ...relationship, following: false })}
+      >
+        Following
+      </Button>
     );
-  return <Button className="bg-blue-500 font-medium text-white">Follow</Button>;
+  return (
+    <Button
+      className="bg-blue-500 font-medium text-white"
+      onClick={() => setRelationship({ ...relationship, following: true })}
+    >
+      Follow
+    </Button>
+  );
 };

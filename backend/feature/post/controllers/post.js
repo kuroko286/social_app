@@ -1,5 +1,6 @@
 const cloudinary = require("cloudinary");
 const Post = require("../models/post");
+const User = require("../../user/models/user");
 
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
@@ -53,8 +54,13 @@ const deletePost = async (req, res) => {
 
 const getAllComments = async (req, res) => {
   try {
-    const { data } = await Post.find().populate("userId");
-    return res.status(200).json(data);
+    const { postId } = req.params;
+    const post = await Post.findById(postId).populate({
+      path: "comments.commentBy",
+      select: "_id picture first_name last_name",
+    });
+
+    return res.status(200).json(post.comments);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -62,11 +68,12 @@ const getAllComments = async (req, res) => {
 
 const createComment = async (req, res) => {
   try {
-    const { userId } = req.user;
+    const { id } = req.user;
     const { comment } = req.body;
+
     const newComment = {
       comment,
-      commentBy: userId,
+      commentBy: id,
     };
 
     const postId = req.params.postId;
@@ -74,7 +81,11 @@ const createComment = async (req, res) => {
       { _id: postId },
       { $push: { comments: newComment } }
     );
-    res.status(200).json({ message: "Comment successfully." });
+    const post = await Post.findById(postId).populate({
+      path: "comments.commentBy",
+      select: "_id picture first_name last_name",
+    });
+    res.status(200).json(post.comments[post.comments.length - 1]);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -82,9 +93,22 @@ const createComment = async (req, res) => {
 
 const likePost = async (req, res) => {
   try {
-    const { id } = req.params;
-    await Post.findByIdAndUpdate(id, { $push: { likes: req.user._id } });
+    const { postId } = req.params;
+    const { id } = req.user;
+    const user = await User.findById(id);
+    await Post.updateOne({ _id: postId }, { $push: { likes: user._id } });
     return res.status(200).json({ message: "Post has been liked." });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+const unlikePost = async (req, res) => {
+  try {
+    const { postId } = req.params;
+    const { id } = req.user;
+    const user = await User.findById(id);
+    await Post.updateOne({ _id: postId }, { $pull: { likes: user._id } });
+    return res.status(200).json({ message: "Post has been unliked." });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -97,4 +121,5 @@ module.exports = {
   getAllComments,
   createComment,
   likePost,
+  unlikePost,
 };
