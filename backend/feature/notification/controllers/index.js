@@ -1,4 +1,5 @@
 const Notification = require("../models/notification");
+const User = require("../../user/models/user");
 
 exports.getAllNotifications = async (req, res) => {
   try {
@@ -17,11 +18,11 @@ exports.getAllNotifications = async (req, res) => {
 exports.createNotification = async (req, res) => {
   try {
     const { id } = req.user;
-    const { fromId } = req.params;
-    const { text } = req.body;
-    const sender = await User.findById(fromId);
-    const receiver = await User.findById(id);
-    if (id === fromId) {
+
+    const { to, text } = req.body;
+    const sender = await User.findById(id);
+    const receiver = await User.findById(to);
+    if (id === to) {
       return res
         .status(400)
         .json({ message: "You can't send notification to yourself." });
@@ -41,10 +42,13 @@ exports.createNotification = async (req, res) => {
 exports.seenNotification = async (req, res) => {
   try {
     const { id } = req.user;
-    const { notificationId } = req.params;
-    await Notification.findByIdAndUpdate(notificationId, {
-      seen: true,
-    });
+    const user = await User.findById(id);
+    await Notification.updateMany(
+      { to: user._id },
+      {
+        seen: true,
+      }
+    );
     return res.status(200).send("Seen notification success!");
   } catch (error) {
     return res.status(500).json({ message: error.message });

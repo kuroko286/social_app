@@ -7,9 +7,6 @@ import { useDispatch } from "react-redux";
 import { logout } from "@/reducers/userReducer";
 import { useNavigate } from "react-router-dom";
 
-const defaultAvatar =
-  "https://res.cloudinary.com/dmhcnhtng/image/upload/v1643044376/avatars/default_pic_jeaybr.png";
-
 export const UserMenu = () => {
   const user = useSelector((state) => state.user);
   const [light, setLight] = useState(true);
@@ -26,8 +23,10 @@ export const UserMenu = () => {
         className="flex items-center gap-4 p-2 rounded-md hover:bg-gray-200 cursor-pointer"
         onClick={() => navigate("/profile")}
       >
-        <Avatar src={user?.picture || defaultAvatar}></Avatar>
-        <p className="font-medium text-lg">Nguyen Van A</p>
+        <Avatar src={user.picture}></Avatar>
+        <p className="font-medium text-lg">
+          {user.first_name + " " + user.last_name}
+        </p>
       </header>
       <div>
         <ul>

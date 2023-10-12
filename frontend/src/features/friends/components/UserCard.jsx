@@ -18,7 +18,7 @@ function UserCard({
         <p className="font-semibold text-lg">{first_name + " " + last_name}</p>
         <div className="mt-3">
           <Button
-            className={"bg-blue-500 text-white w-full text-center "}
+            className={"bg-blue-500 text-white w-full text-center"}
             onClick={onClick}
             loading={loading}
           >

@@ -135,8 +135,8 @@ export const AllMenu = () => {
               className="outline-none border-none bg-transparent grow"
             />
           </div>
-          {menus.map(({ type, items }) => (
-            <div className="mt-3">
+          {menus.map(({ type, items }, index) => (
+            <div className="mt-3" key={index}>
               <h4 className="font-medium text-lg">{type}</h4>
               <ul className="">
                 {items.map(({ className, name, description }) => (
@@ -158,8 +158,11 @@ export const AllMenu = () => {
         <div className="bg-gray-200 p-3 w-[200px] fixed right-8 rounded-lg">
           <header className="font-medium text-lg">Create</header>
           <ul>
-            {actions.map(({ className, name }) => (
-              <li className="flex items-center gap-3 p-2 hover:bg-gray-300 rounded-lg cursor-pointer">
+            {actions.map(({ className, name }, index) => (
+              <li
+                className="flex items-center gap-3 p-2 hover:bg-gray-300 rounded-lg cursor-pointer"
+                key={index}
+              >
                 <div className={`${className}`}></div>
                 <p className="font-medium">{name}</p>
               </li>

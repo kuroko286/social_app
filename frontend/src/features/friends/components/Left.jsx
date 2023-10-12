@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Left() {
-  const [active, setActive] = useState(1);
+  const [active, setActive] = useState(3);
   const navigate = useNavigate();
   return (
     <div className="fixed left-0 top-header bottom-0 p-3 border-r-2 border-black w-[400px]">

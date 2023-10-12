@@ -29,7 +29,15 @@ const DATABASE_URL = process.env.DATABASE_URL;
 app.use(cors());
 
 // routes
-const features = ["auth", "friends", "post", "user", "search"];
+const features = [
+  "auth",
+  "friends",
+  "post",
+  "user",
+  "search",
+  "chat",
+  "notification",
+];
 features.forEach((feature) => {
   const router = require(`./feature/${feature}/routes`);
   app.use(`/`, router);
@@ -39,7 +47,7 @@ features.forEach((feature) => {
 mongoose
   .connect(DATABASE_URL)
   .then((connection) => console.log("Database connection established!"))
-  .catch((error) => console.log("Error connecting"));
+  .catch((error) => console.log("Error connecting", error.message));
 
 app.get("/", (req, res) => {
   res.send("welcome from home");

@@ -3,7 +3,7 @@ import { Avatar } from "@/components/Element/Avatar";
 import { Button } from "@/components/Element/Button";
 import ImageGallery from "@/components/Element/ImageGallery";
 import EmojiPicker from "emoji-picker-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { getTimeAgo } from "@/utils/datetime";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -12,6 +12,10 @@ import { useCreateComment } from "../api/createComment";
 import { useEmojiTextInput } from "@/hooks/useEmojiTextInput";
 import { Comment, Heart, Share } from "@/components/Icon/Icons";
 import api from "@/lib/axios";
+import {
+  handleSendReaction,
+  socketSendComment,
+} from "@/realtime/socketConnection";
 
 export const Post = ({ post }) => {
   const user = useSelector((state) => state.user);
@@ -79,6 +83,26 @@ export const PostInfo = ({ post, liked: _liked = false }) => {
           },
         }
       );
+      await api.post(
+        "/notifications",
+        { to: post.user._id, text: "liked your post." },
+        {
+          headers: {
+            Authorization: `Bearer ${user.token}`,
+          },
+        }
+      );
+      handleSendReaction({
+        from: {
+          _id: user.id,
+          picture: user.picture,
+          first_name: user.first_name,
+          last_name: user.last_name,
+        },
+        to: post.user._id,
+        text: "like your post.",
+        seen: false,
+      });
       setLike(like + 1);
       setLiked(!liked);
     } catch (error) {
@@ -115,25 +139,25 @@ export const PostInfo = ({ post, liked: _liked = false }) => {
       <div className="grid grid-cols-3 items-center">
         {liked ? (
           <div
-            className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300"
+            className="cursor-pointer py-2 rounded-lg flex items-center justify-center font-medium hover:bg-gray-300"
             onClick={handleUnlike}
           >
-            <HeartFill size={12} />
+            <HeartFill size={24} />
           </div>
         ) : (
           <div
-            className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300"
+            className="cursor-pointer py-2 rounded-lg flex items-center justify-center font-medium hover:bg-gray-300"
             onClick={handleLike}
           >
-            <Heart size={12} />
+            <Heart size={24} />
           </div>
         )}
 
-        <p className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300">
-          <Comment size={12} />
+        <p className="cursor-pointer py-2 rounded-lg flex items-center justify-center font-medium hover:bg-gray-300">
+          <Comment size={24} />
         </p>
-        <p className="cursor-pointer py-2 rounded-lg text-center font-medium hover:bg-gray-300">
-          <Share size={12} />
+        <p className="cursor-pointer py-2 rounded-lg flex items-center justify-center font-medium hover:bg-gray-300">
+          <Share size={24} />
         </p>
       </div>
       <hr className="my-1 bg-black" />
@@ -143,13 +167,52 @@ export const PostInfo = ({ post, liked: _liked = false }) => {
 
 export const PostComment = ({ post, user }) => {
   const methods = useForm();
+  const [showComments, setShowComments] = useState(false);
+  const [comments, setComments] = useState([]);
+  useEffect(() => {
+    const fetchComments = async () => {
+      const { data } = await api.get(`/posts/${post._id}/comments`, {
+        headers: {
+          Authorization: `Bearer ${user.token}`,
+        },
+      });
+
+      setComments(data);
+    };
+    fetchComments();
+  }, [showComments]);
   return (
     <div>
-      <p className="font-medium text-gray-500 cursor-pointer py-1">
-        View all comments
-      </p>
+      {showComments && (
+        <ul className="bg-white shadow rounded-lg p-6 max-h-[200px] overflow-auto">
+          {comments.map((comment) => (
+            <li key={comment._id}>
+              <p className="font-medium text-gray-500 cursor-pointer py-1">
+                {comment.commentBy.first_name +
+                  " " +
+                  comment.commentBy.last_name}
+              </p>
+              <p className="ml-6">{comment.comment}</p>
+            </li>
+          ))}
+        </ul>
+      )}
+      {!showComments && (
+        <p
+          className="font-medium text-gray-500 cursor-pointer py-1"
+          onClick={() => setShowComments(true)}
+        >
+          View all comments
+        </p>
+      )}
+
       <FormProvider {...methods}>
-        <CommentForm post={post} user={user} />
+        <CommentForm
+          post={post}
+          user={user}
+          comments={comments}
+          setComments={setComments}
+        />
       </FormProvider>
     </div>
   );
@@ -157,7 +220,7 @@ export const PostComment = ({ post, user }) => {
 
 export const CommentForm = ({ post, user, comments, setComments }) => {
   const {
-    methods: { control, handleSubmit },
+    methods: { control, handleSubmit, reset, setValue },
     handleEmojiSelect,
     handleTogglePicker,
     showPicker,
@@ -167,7 +230,11 @@ export const CommentForm = ({ post, user, comments, setComments }) => {
   const handleSendComment = async ({ comment }) => {
     try {
       const newComment = await mutate({ comment });
+
       setComments([...comments, newComment]);
+      socketSendComment({ from: user.id, to: post.user._id, comment });
+
+      reset();
     } catch (error) {
       console.log(error);
     }
@@ -222,9 +289,9 @@ export const CommentForm = ({ post, user, comments, setComments }) => {
       />
 
       {error && <span className="text-red-500">{error}</span>}
-      {responseData && (
+      {/* {responseData && (
         <span className="text-green-500">Send comment successfully</span>
-      )}
+      )} */}
     </form>
   );
 };

@@ -2,13 +2,8 @@ import { Loading } from "@/components/Element/Loading";
 import { useGetFriends } from "../api/getFriends";
 import Left from "../components/Left";
 import UserCard from "../components/UserCard";
+import { FriendCard } from "../components/FriendCard";
 
-// const user = {
-//   picture:
-//     "https://res.cloudinary.com/dmhcnhtng/image/upload/v1643044376/avatars/default_pic_jeaybr.png",
-//   first_name: "Nguyen",
-//   last_name: "Van A",
-// };
 function Friends() {
   const { data: friends, error, loading } = useGetFriends();
   if (loading) {
@@ -24,7 +19,7 @@ function Friends() {
         <h1 className="text-2xl font-bold mb-4">Your Friends</h1>
         <div className="grid grid-cols-4 gap-4">
           {friends.map((friend) => (
-            <UserCard key={friend._id} action={"Friend"} user={friend} />
+            <FriendCard key={friend._id} user={friend} />
           ))}
         </div>
       </div>

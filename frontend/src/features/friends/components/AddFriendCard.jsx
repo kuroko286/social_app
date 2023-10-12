@@ -8,7 +8,9 @@ import {
 
 export const AddFriendCard = ({ user }) => {
   const { token } = useSelector((state) => state.user);
-  const [action, setAction] = useState("Add Friend");
+  const [action, setAction] = useState(
+    user.hasRequested ? "Cancel Request" : "Add Friend"
+  );
 
   const handleSendFriendRequest = async () => {
     try {

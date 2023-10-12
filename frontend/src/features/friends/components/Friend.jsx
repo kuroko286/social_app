@@ -1,3 +1,5 @@
+import React from "react";
+
 function Friend() {
   return <div>Friend</div>;
 }

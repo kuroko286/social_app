@@ -11,6 +11,7 @@ import { useGetAllPosts } from "../../../post/api/getAllPosts";
 export const Home = () => {
   const user = useSelector((state) => state.user);
   const { data, error, loading } = useGetAllPosts();
+
   if (loading) {
     return (
       <h1>

@@ -12,6 +12,9 @@ import HomeLayout from "@/layout/HomeLayout";
 import Friends from "./features/friends/pages/Friends";
 import FriendSuggest from "./features/friends/pages/FriendSuggest";
 import FriendRequest from "./features/friends/pages/FriendRequest";
+import ChatRoom from "./features/chat/pages/ChatRoom";
+import UndefinedChatRoom from "./features/chat/pages/UndefinedChatRoom";
+
 function App() {
   return (
     <div>
@@ -25,6 +28,8 @@ function App() {
             <Route path="/friends" element={<Friends />} exact />
             <Route path="/friends/suggests" element={<FriendSuggest />} exact />
             <Route path="/friends/requests" element={<FriendRequest />} exact />
+            <Route path="/messages" element={<UndefinedChatRoom />} exact />
+            <Route path="/messages/:userId" element={<ChatRoom />} exact />
           </Route>
           <Route element={<NotRequireAuth />}>
             <Route path="/login" element={<Login />} exact />
